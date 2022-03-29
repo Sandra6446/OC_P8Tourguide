@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="microservice-rewards.main" target="1.8" />
+      <module name="microservice-rewards.test" target="1.8" />
+      <module name="P8_TourGuide.api-tourguide" target="1.8" />
+      <module name="P8_TourGuide.api-tourguide.main" target="1.8" />
+      <module name="P8_TourGuide.api-tourguide.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
