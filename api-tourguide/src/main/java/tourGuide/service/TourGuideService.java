@@ -7,11 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tourGuide.client.GpsClient;
 import tourGuide.helper.InternalTestHelper;
-import tourGuide.model.rest.response.Location;
+import tourGuide.model.rest.response.Attraction;
 import tourGuide.model.rest.response.VisitedLocation;
 import tourGuide.tracker.Tracker;
 import tourGuide.user.User;
-import tourGuide.user.UserReward;
 import tripPricer.Provider;
 import tripPricer.TripPricer;
 
@@ -55,9 +54,12 @@ public class TourGuideService {
         addShutDownHook();
     }
 
+    /*
     public List<UserReward> getUserRewards(User user) {
         return user.getUserRewards();
     }
+
+     */
 
     public VisitedLocation getUserLocation(User user) {
         VisitedLocation visitedLocation = (user.getVisitedLocations().size() > 0 ?
@@ -80,6 +82,7 @@ public class TourGuideService {
         }
     }
 
+
     public List<Provider> getTripDeals(User user) {
         int cumulatativeRewardPoints = user.getUserRewards().stream().mapToInt(i -> i.getRewardPoints()).sum();
         List<Provider> providers = tripPricer.getPrice(tripPricerApiKey, user.getUserId(), user.getUserPreferences().getNumberOfAdults(),
@@ -91,15 +94,14 @@ public class TourGuideService {
     public VisitedLocation trackUserLocation(User user) {
         VisitedLocation visitedLocation = gpsClient.readVisitedLocation(user.getUserId());
         user.addToVisitedLocations(visitedLocation);
-        //rewardsService.calculateRewards(user);
+        rewardsService.calculateRewards(user);
         return visitedLocation;
     }
 
-    /*
     public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {
 
         List<Attraction> nearbyAttractions = new ArrayList<>();
-        for (Attraction attraction : gpsUtil.getAttractions()) {
+        for (Attraction attraction : gpsClient.readAttractions()) {
             if (rewardsService.isWithinAttractionProximity(attraction, visitedLocation.getLocation())) {
                 nearbyAttractions.add(attraction);
             }
@@ -107,8 +109,6 @@ public class TourGuideService {
 
         return nearbyAttractions;
     }
-
-     */
 
     private void addShutDownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -133,7 +133,7 @@ public class TourGuideService {
 
     private void generateUserLocationHistory(User user) {
         IntStream.range(0, 3).forEach(i -> {
-            user.addToVisitedLocations(new VisitedLocation(user.getUserId(), new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime()));
+            user.addToVisitedLocations(new VisitedLocation(user.getUserId(), new tourGuide.model.rest.response.Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime()));
         });
     }
 

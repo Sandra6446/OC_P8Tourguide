@@ -1,6 +1,5 @@
 package tourGuide.user;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,8 +15,8 @@ public class User {
 	private String emailAddress;
 	private Date latestLocationTimestamp;
 	private List<VisitedLocation> visitedLocations = new ArrayList<>();
-	private List<UserReward> userRewards = new ArrayList<>();
-	private UserPreferences userPreferences = new UserPreferences();
+	private List<tourGuide.user.UserReward> userRewards = new ArrayList<>();
+	private tourGuide.user.UserPreferences userPreferences = new tourGuide.user.UserPreferences();
 	private List<Provider> tripDeals = new ArrayList<>();
 	public User(UUID userId, String userName, String phoneNumber, String emailAddress) {
 		this.userId = userId;
@@ -69,29 +68,30 @@ public class User {
 	public void clearVisitedLocations() {
 		visitedLocations.clear();
 	}
-	
-	public void addUserReward(UserReward userReward) {
-		if(userRewards.stream().filter(r -> !r.attraction.attractionName.equals(userReward.attraction)).count() == 0) {
+
+	public void addUserReward(tourGuide.user.UserReward userReward) {
+		if(userRewards.stream().filter(r -> !r.attraction.getAttractionName().equals(userReward.attraction)).count() == 0) {
 			userRewards.add(userReward);
 		}
 	}
 	
-	public List<UserReward> getUserRewards() {
+	public List<tourGuide.user.UserReward> getUserRewards() {
 		return userRewards;
 	}
 	
-	public UserPreferences getUserPreferences() {
+	public tourGuide.user.UserPreferences getUserPreferences() {
 		return userPreferences;
 	}
 	
-	public void setUserPreferences(UserPreferences userPreferences) {
+	public void setUserPreferences(tourGuide.user.UserPreferences userPreferences) {
 		this.userPreferences = userPreferences;
 	}
 
 	public VisitedLocation getLastVisitedLocation() {
 		return visitedLocations.get(visitedLocations.size() - 1);
 	}
-	
+
+
 	public void setTripDeals(List<Provider> tripDeals) {
 		this.tripDeals = tripDeals;
 	}

@@ -1,9 +1,12 @@
 package tourGuide.model.rest.response;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Data
 public class Location {
+
     private double longitude;
     private double latitude;
 
