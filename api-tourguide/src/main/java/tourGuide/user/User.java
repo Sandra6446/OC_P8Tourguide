@@ -1,11 +1,12 @@
 package tourGuide.user;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import gpsUtil.location.VisitedLocation;
+import tourGuide.model.rest.response.VisitedLocation;
 import tripPricer.Provider;
 
 public class User {

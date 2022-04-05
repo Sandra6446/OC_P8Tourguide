@@ -2,8 +2,14 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="microservice-reward" target="1.8" />
+      <module name="microservice-reward.main" target="1.8" />
+      <module name="microservice-reward.test" target="1.8" />
       <module name="microservice-rewards.main" target="1.8" />
       <module name="microservice-rewards.test" target="1.8" />
+      <module name="microservice-trip" target="1.8" />
+      <module name="microservice-trip.main" target="1.8" />
+      <module name="microservice-trip.test" target="1.8" />
       <module name="P8_TourGuide.api-tourguide" target="1.8" />
       <module name="P8_TourGuide.api-tourguide.main" target="1.8" />
       <module name="P8_TourGuide.api-tourguide.test" target="1.8" />

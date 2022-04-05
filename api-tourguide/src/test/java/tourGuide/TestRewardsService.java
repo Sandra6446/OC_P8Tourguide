@@ -19,6 +19,7 @@ import tourGuide.service.TourGuideService;
 import tourGuide.user.User;
 import tourGuide.user.UserReward;
 
+/*
 public class TestRewardsService {
 
 	@Test
@@ -37,7 +38,7 @@ public class TestRewardsService {
 		tourGuideService.tracker.stopTracking();
 		assertTrue(userRewards.size() == 1);
 	}
-	
+
 	@Test
 	public void isWithinAttractionProximity() {
 		GpsUtil gpsUtil = new GpsUtil();
@@ -64,3 +65,5 @@ public class TestRewardsService {
 	}
 	
 }
+
+ */

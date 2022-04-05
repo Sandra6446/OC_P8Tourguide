@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  api-tourguide:
+    image: tourguide
+    build: api-tourguide
+    ports:
+      - "8080:8080"
+    environment:
+      - url.client=http://microservice-gps:8081
+    depends_on:
+      - microservice-gps
+  microservice-gps:
+    image: gps
+    build: microservice-gps
+    ports:
+      - "8081:8081"
