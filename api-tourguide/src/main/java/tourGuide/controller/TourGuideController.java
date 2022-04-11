@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tourGuide.model.rest.response.VisitedLocation;
+import tourGuide.model.rest.response.gps.VisitedLocation;
+import tourGuide.model.rest.response.trip.Provider;
+import tourGuide.model.user.User;
 import tourGuide.service.TourGuideService;
-import tourGuide.user.User;
-import tripPricer.Provider;
 
 import java.util.List;
 
@@ -47,13 +47,11 @@ public class TourGuideController {
     	return JsonStream.serialize(tourGuideService.getNearByAttractions(visitedLocation));
     }
 
-    /*
+
     @RequestMapping("/getRewards") 
     public String getRewards(@RequestParam String userName) {
     	return JsonStream.serialize(tourGuideService.getUserRewards(getUser(userName)));
     }
-
-     */
     
     @RequestMapping("/getAllCurrentLocations")
     public String getAllCurrentLocations() {

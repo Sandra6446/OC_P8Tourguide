@@ -1,24 +1,5 @@
 package tourGuide;
 
-import gpsUtil.GpsUtil;
-import gpsUtil.location.Attraction;
-import org.apache.commons.lang3.time.StopWatch;
-import org.junit.Ignore;
-import org.junit.Test;
-import rewardCentral.RewardCentral;
-import tourGuide.helper.InternalTestHelper;
-import tourGuide.model.rest.response.VisitedLocation;
-import tourGuide.service.RewardsService;
-import tourGuide.service.TourGuideService;
-import tourGuide.user.User;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertTrue;
-
 public class TestPerformance {
 	
 	/*

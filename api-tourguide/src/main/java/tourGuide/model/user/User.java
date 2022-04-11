@@ -1,12 +1,12 @@
-package tourGuide.user;
+package tourGuide.model.user;
+
+import tourGuide.model.rest.response.gps.VisitedLocation;
+import tourGuide.model.rest.response.trip.Provider;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import tourGuide.model.rest.response.VisitedLocation;
-import tripPricer.Provider;
 
 public class User {
 	private final UUID userId;
@@ -15,9 +15,10 @@ public class User {
 	private String emailAddress;
 	private Date latestLocationTimestamp;
 	private List<VisitedLocation> visitedLocations = new ArrayList<>();
-	private List<tourGuide.user.UserReward> userRewards = new ArrayList<>();
-	private tourGuide.user.UserPreferences userPreferences = new tourGuide.user.UserPreferences();
+	private List<UserReward> userRewards = new ArrayList<>();
+	private UserPreferences userPreferences = new tourGuide.model.user.UserPreferences();
 	private List<Provider> tripDeals = new ArrayList<>();
+
 	public User(UUID userId, String userName, String phoneNumber, String emailAddress) {
 		this.userId = userId;
 		this.userName = userName;
@@ -69,21 +70,21 @@ public class User {
 		visitedLocations.clear();
 	}
 
-	public void addUserReward(tourGuide.user.UserReward userReward) {
+	public void addUserReward(tourGuide.model.user.UserReward userReward) {
 		if(userRewards.stream().filter(r -> !r.attraction.getAttractionName().equals(userReward.attraction)).count() == 0) {
 			userRewards.add(userReward);
 		}
 	}
 	
-	public List<tourGuide.user.UserReward> getUserRewards() {
+	public List<tourGuide.model.user.UserReward> getUserRewards() {
 		return userRewards;
 	}
 	
-	public tourGuide.user.UserPreferences getUserPreferences() {
+	public tourGuide.model.user.UserPreferences getUserPreferences() {
 		return userPreferences;
 	}
 	
-	public void setUserPreferences(tourGuide.user.UserPreferences userPreferences) {
+	public void setUserPreferences(tourGuide.model.user.UserPreferences userPreferences) {
 		this.userPreferences = userPreferences;
 	}
 

@@ -1,15 +1,14 @@
 package tourGuide.service;
 
-import gpsUtil.GpsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import rewardCentral.RewardCentral;
 import tourGuide.client.GpsClient;
-import tourGuide.model.rest.response.Attraction;
-import tourGuide.model.rest.response.Location;
-import tourGuide.model.rest.response.VisitedLocation;
-import tourGuide.user.User;
-import tourGuide.user.UserReward;
+import tourGuide.client.RewardClient;
+import tourGuide.model.rest.response.gps.Attraction;
+import tourGuide.model.rest.response.gps.Location;
+import tourGuide.model.rest.response.gps.VisitedLocation;
+import tourGuide.model.user.User;
+import tourGuide.model.user.UserReward;
 
 import java.util.List;
 
@@ -20,18 +19,19 @@ public class RewardsService {
     @Autowired
 	GpsClient gpsClient;
 
+    @Autowired
+	RewardClient rewardClient;
+
 	// proximity in miles
     private int defaultProximityBuffer = 10;
 	private int proximityBuffer = defaultProximityBuffer;
 	private int attractionProximityRange = 200;
-	private final GpsUtil gpsUtil;
-	private final RewardCentral rewardsCentral;
-	
-	public RewardsService(GpsUtil gpsUtil, RewardCentral rewardCentral) {
-		this.gpsUtil = gpsUtil;
-		this.rewardsCentral = rewardCentral;
+
+	public RewardsService(GpsClient gpsClient, RewardClient rewardClient) {
+		this.gpsClient = gpsClient;
+		this.rewardClient = rewardClient;
 	}
-	
+
 	public void setProximityBuffer(int proximityBuffer) {
 		this.proximityBuffer = proximityBuffer;
 	}
@@ -66,7 +66,7 @@ public class RewardsService {
 
 
 	private int getRewardPoints(Attraction attraction, User user) {
-		return rewardsCentral.getAttractionRewardPoints(attraction.getAttractionId(), user.getUserId());
+		return rewardClient.readRewards(attraction.getAttractionId(), user.getUserId());
 	}
 	
 	public double getDistance(Location loc1, Location loc2) {
@@ -82,6 +82,5 @@ public class RewardsService {
         double statuteMiles = STATUTE_MILES_PER_NAUTICAL_MILE * nauticalMiles;
         return statuteMiles;
 	}
-
 
 }

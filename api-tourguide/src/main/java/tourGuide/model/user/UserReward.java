@@ -1,8 +1,7 @@
-package tourGuide.user;
+package tourGuide.model.user;
 
-
-import tourGuide.model.rest.response.Attraction;
-import tourGuide.model.rest.response.VisitedLocation;
+import tourGuide.model.rest.response.gps.Attraction;
+import tourGuide.model.rest.response.gps.VisitedLocation;
 
 public class UserReward {
 

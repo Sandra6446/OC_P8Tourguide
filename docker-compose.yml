@@ -1,16 +1,60 @@
 version: "3.9"
 services:
-  api-tourguide:
-    image: tourguide
-    build: api-tourguide
-    ports:
-      - "8080:8080"
-    environment:
-      - url.client=http://microservice-gps:8081
-    depends_on:
-      - microservice-gps
   microservice-gps:
     image: gps
-    build: microservice-gps
+    container_name: microservice-gps
+    build:
+      context: microservice-gps
+      dockerfile: Dockerfile
+    restart: always
     ports:
       - "8081:8081"
+    networks:
+      - tourguide-network
+
+  microservice-reward:
+    image: reward
+    container_name: microservice-reward
+    build:
+      context: microservice-reward
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8082:8082"
+    networks:
+      - tourguide-network
+
+  microservice-trip:
+    image: trip
+    container_name: microservice-trip
+    build:
+      context: microservice-trip
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8083:8083"
+    networks:
+      - tourguide-network
+
+  api-tourguide:
+    image: tourguide
+    container_name: api-tourguide
+    build:
+      context: api-tourguide
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - url.gps=http://microservice-gps:8081/
+      - url.reward=http://microservice-reward:8082/
+      - url.trip=http://microservice-trip:8083/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - microservice-gps
+      - microservice-reward
+      - microservice-trip
+    networks:
+      - tourguide-network
+
+networks:
+  tourguide-network: { }

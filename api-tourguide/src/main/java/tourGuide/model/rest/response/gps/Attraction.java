@@ -1,4 +1,4 @@
-package tourGuide.model.rest.response;
+package tourGuide.model.rest.response.gps;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,15 +1,17 @@
 package trip;
 
+import com.jsoniter.spi.JsoniterSpi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import tripPricer.TripPricer;
+
+import java.util.UUID;
 
 @Configuration
 public class TripModule {
 
 	@Bean
-	public TripPricer getTripPricer() {
-		return new TripPricer();
+	public void jsonStreamConfigure() {
+		JsoniterSpi.registerTypeEncoder(UUID.class, (obj, stream) -> stream.writeVal(obj.toString()));
 	}
 	
 }

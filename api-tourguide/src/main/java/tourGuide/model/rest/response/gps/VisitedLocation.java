@@ -1,4 +1,4 @@
-package tourGuide.model.rest.response;
+package tourGuide.model.rest.response.gps;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;

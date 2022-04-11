@@ -1,18 +1,19 @@
 package tourGuide.service;
 
-import gpsUtil.GpsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tourGuide.client.GpsClient;
+import tourGuide.client.TripClient;
 import tourGuide.helper.InternalTestHelper;
-import tourGuide.model.rest.response.Attraction;
-import tourGuide.model.rest.response.VisitedLocation;
+import tourGuide.model.rest.response.gps.Attraction;
+import tourGuide.model.rest.response.gps.Location;
+import tourGuide.model.rest.response.gps.VisitedLocation;
+import tourGuide.model.rest.response.trip.Provider;
+import tourGuide.model.user.User;
+import tourGuide.model.user.UserReward;
 import tourGuide.tracker.Tracker;
-import tourGuide.user.User;
-import tripPricer.Provider;
-import tripPricer.TripPricer;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -29,19 +30,19 @@ public class TourGuideService {
      **********************************************************************************/
     private static final String tripPricerApiKey = "test-server-api-key";
     public final Tracker tracker;
-    private final TripPricer tripPricer = new TripPricer();
     // Database connection will be used for external users, but for testing purposes internal users are provided and stored in memory
     private final Map<String, User> internalUserMap = new HashMap<>();
     boolean testMode = true;
-    private GpsUtil gpsUtil;
     private RewardsService rewardsService;
     private Logger logger = LoggerFactory.getLogger(TourGuideService.class);
 
     @Autowired
     private GpsClient gpsClient;
 
-    public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService) {
-        this.gpsUtil = gpsUtil;
+    @Autowired
+    private TripClient tripClient;
+
+    public TourGuideService(RewardsService rewardsService) {
         this.rewardsService = rewardsService;
 
         if (testMode) {
@@ -54,12 +55,9 @@ public class TourGuideService {
         addShutDownHook();
     }
 
-    /*
     public List<UserReward> getUserRewards(User user) {
         return user.getUserRewards();
     }
-
-     */
 
     public VisitedLocation getUserLocation(User user) {
         VisitedLocation visitedLocation = (user.getVisitedLocations().size() > 0 ?
@@ -85,7 +83,7 @@ public class TourGuideService {
 
     public List<Provider> getTripDeals(User user) {
         int cumulatativeRewardPoints = user.getUserRewards().stream().mapToInt(i -> i.getRewardPoints()).sum();
-        List<Provider> providers = tripPricer.getPrice(tripPricerApiKey, user.getUserId(), user.getUserPreferences().getNumberOfAdults(),
+        List<Provider> providers = tripClient.getPrice(tripPricerApiKey, user.getUserId(), user.getUserPreferences().getNumberOfAdults(),
                 user.getUserPreferences().getNumberOfChildren(), user.getUserPreferences().getTripDuration(), cumulatativeRewardPoints);
         user.setTripDeals(providers);
         return providers;
@@ -133,7 +131,7 @@ public class TourGuideService {
 
     private void generateUserLocationHistory(User user) {
         IntStream.range(0, 3).forEach(i -> {
-            user.addToVisitedLocations(new VisitedLocation(user.getUserId(), new tourGuide.model.rest.response.Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime()));
+            user.addToVisitedLocations(new VisitedLocation(user.getUserId(), new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime()));
         });
     }
 
