@@ -30,8 +30,10 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.20'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
-    implementation 'org.springframework.cloud:spring-cloud-dependencies:Greenwich.SR6'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:2.1.5.RELEASE'
+    //SPRING CLOUD CONFIG
+    implementation 'org.springframework.cloud:spring-cloud-starter-config:2.1.7.RELEASE'
+
     implementation 'org.apache.commons:commons-lang3:3.9'
 
     compile group: 'org.javamoney', name: 'moneta', version: '1.3'

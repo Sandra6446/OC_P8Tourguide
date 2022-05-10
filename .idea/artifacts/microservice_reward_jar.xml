@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="microservice-reward:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/microservice_reward_jar</output-path>
+    <root id="archive" name="microservice-reward.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/microservice-reward/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

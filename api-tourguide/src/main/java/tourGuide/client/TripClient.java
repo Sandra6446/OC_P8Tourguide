@@ -8,7 +8,7 @@ import tourGuide.model.rest.response.trip.Provider;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "microservice-trip", url = "${url.trip}")
+@FeignClient(name = "microservice-trip", url = "${feign.client.url.tripUrl}")
 public interface TripClient {
 
     @RequestMapping(value = "/getPrice", produces = "application/json")

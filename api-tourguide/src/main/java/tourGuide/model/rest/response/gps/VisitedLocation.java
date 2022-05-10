@@ -1,10 +1,8 @@
 package tourGuide.model.rest.response.gps;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tourGuide.model.rest.CustomDateDeserializer;
 
 import java.util.Date;
 import java.util.UUID;
@@ -15,10 +13,7 @@ import java.util.UUID;
 public class VisitedLocation {
 
     private UUID userId;
-
     private Location location;
-
-    @JsonDeserialize(using = CustomDateDeserializer.class)
     private Date timeVisited;
 
 }

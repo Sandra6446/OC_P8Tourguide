@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class GpsController {
     }
 
     @RequestMapping("/getUserLocation")
-    public ResponseEntity getLocation(@RequestParam UUID userId) {
+    public ResponseEntity getLocation(@RequestParam UUID userId) throws ParseException {
         VisitedLocation visitedLocation = gpsService.getUserLocation(userId);
         return ResponseEntity.ok(JsonStream.serialize(visitedLocation));
     }

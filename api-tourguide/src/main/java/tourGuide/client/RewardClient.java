@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
-@FeignClient(name = "microservice-reward", url = "${url.reward}")
+@FeignClient(name = "microservice-reward", url = "${feign.client.url.rewardUrl}")
 public interface RewardClient {
 
     @RequestMapping(value = "/getRewards", produces = "application/json")
-    Integer readRewards(@RequestParam UUID attractionId, @RequestParam UUID userId);
+    int readRewards(@RequestParam UUID attractionId, @RequestParam UUID userId);
 
 }

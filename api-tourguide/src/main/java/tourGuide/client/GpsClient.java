@@ -3,13 +3,14 @@ package tourGuide.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import rx.Observable;
 import tourGuide.model.rest.response.gps.Attraction;
 import tourGuide.model.rest.response.gps.VisitedLocation;
 
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "microservice-gps", url = "${url.gps}")
+@FeignClient(name = "microservice-gps", url = "${feign.client.url.gpsUrl}")
 public interface GpsClient {
 
     @RequestMapping(value = "/getUserLocation", produces = "application/json")

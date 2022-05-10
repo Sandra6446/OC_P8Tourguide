@@ -1,5 +1,6 @@
 package tourGuide.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import tourGuide.client.GpsClient;
 import tourGuide.client.TripClient;
 import tourGuide.helper.InternalTestHelper;
+import tourGuide.model.NearestAttraction;
 import tourGuide.model.rest.response.gps.Attraction;
 import tourGuide.model.rest.response.gps.Location;
 import tourGuide.model.rest.response.gps.VisitedLocation;
@@ -18,10 +20,15 @@ import tourGuide.tracker.Tracker;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
+@RequiredArgsConstructor
 public class TourGuideService {
     /**********************************************************************************
      *
@@ -29,22 +36,23 @@ public class TourGuideService {
      *
      **********************************************************************************/
     private static final String tripPricerApiKey = "test-server-api-key";
-    public final Tracker tracker;
     // Database connection will be used for external users, but for testing purposes internal users are provided and stored in memory
     private final Map<String, User> internalUserMap = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(TourGuideService.class);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    public Tracker tracker;
     boolean testMode = true;
-    private RewardsService rewardsService;
-    private Logger logger = LoggerFactory.getLogger(TourGuideService.class);
 
     @Autowired
+    private RewardsService rewardsService;
+    @Autowired
     private GpsClient gpsClient;
-
     @Autowired
     private TripClient tripClient;
 
-    public TourGuideService(RewardsService rewardsService) {
+    public TourGuideService(GpsClient gpsClient, RewardsService rewardsService) {
+        this.gpsClient = gpsClient;
         this.rewardsService = rewardsService;
-
         if (testMode) {
             logger.info("TestMode enabled");
             logger.debug("Initializing users");
@@ -59,10 +67,11 @@ public class TourGuideService {
         return user.getUserRewards();
     }
 
-    public VisitedLocation getUserLocation(User user) {
+    public VisitedLocation getUserLocation(User user) throws ExecutionException, InterruptedException {
+        logger.debug("TourGuideService.getUserLocation");
         VisitedLocation visitedLocation = (user.getVisitedLocations().size() > 0 ?
                 user.getLastVisitedLocation() :
-                trackUserLocation(user));
+                trackUserLocation(user).get());
         return visitedLocation;
     }
 
@@ -80,32 +89,45 @@ public class TourGuideService {
         }
     }
 
-
-    public List<Provider> getTripDeals(User user) {
+    public CompletableFuture<List<Provider>> getTripDeals(User user) {
         int cumulatativeRewardPoints = user.getUserRewards().stream().mapToInt(i -> i.getRewardPoints()).sum();
-        List<Provider> providers = tripClient.getPrice(tripPricerApiKey, user.getUserId(), user.getUserPreferences().getNumberOfAdults(),
-                user.getUserPreferences().getNumberOfChildren(), user.getUserPreferences().getTripDuration(), cumulatativeRewardPoints);
-        user.setTripDeals(providers);
-        return providers;
+        logger.debug("TourGuideService.getTripDeals");
+        return CompletableFuture.supplyAsync(() -> {
+            List<Provider> providers = tripClient.getPrice(tripPricerApiKey, user.getUserId(), user.getUserPreferences().getNumberOfAdults(),
+                    user.getUserPreferences().getNumberOfChildren(), user.getUserPreferences().getTripDuration(), cumulatativeRewardPoints);
+            user.setTripDeals(providers);
+            return providers;
+        }, executorService);
     }
 
-    public VisitedLocation trackUserLocation(User user) {
-        VisitedLocation visitedLocation = gpsClient.readVisitedLocation(user.getUserId());
-        user.addToVisitedLocations(visitedLocation);
-        rewardsService.calculateRewards(user);
-        return visitedLocation;
+    public CompletableFuture<VisitedLocation> trackUserLocation(User user) {
+        return CompletableFuture.supplyAsync(() -> {
+            logger.debug("TourGuideService.trackUserLocation");
+            VisitedLocation visitedLocation = gpsClient.readVisitedLocation(user.getUserId());
+            user.addToVisitedLocations(visitedLocation);
+            CompletableFuture.runAsync(() -> rewardsService.calculateRewards(user));
+            return visitedLocation;
+        }, executorService);
     }
 
-    public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {
+    public CompletableFuture<List<Attraction>> getNearByAttractions(VisitedLocation visitedLocation) {
+        logger.debug("TourGuideService.getNearbyAttractions");
+        return CompletableFuture.supplyAsync(() -> {
+            List<Attraction> attractions = gpsClient.readAttractions();
+            return attractions.stream().filter(attraction -> rewardsService.isWithinAttractionProximity(attraction, visitedLocation.getLocation())).collect(Collectors.toList());
+        }, executorService);
+    }
 
-        List<Attraction> nearbyAttractions = new ArrayList<>();
-        for (Attraction attraction : gpsClient.readAttractions()) {
-            if (rewardsService.isWithinAttractionProximity(attraction, visitedLocation.getLocation())) {
-                nearbyAttractions.add(attraction);
+    public CompletableFuture<List<NearestAttraction>> getNearestAttractions(User user, VisitedLocation visitedLocation) {
+        logger.debug("TourGuideService.getNearbyAttractions");
+        return CompletableFuture.supplyAsync(() -> {
+            List<Attraction> attractions = gpsClient.readAttractions();
+            List<NearestAttraction> nearestAttractions = new ArrayList<>();
+            for (Attraction attraction : attractions) {
+                nearestAttractions.add(new NearestAttraction(attraction.getAttractionName(), attraction.getLatitude(), attraction.getLongitude(), visitedLocation.getLocation(), rewardsService.getDistance(attraction, visitedLocation.getLocation()), rewardsService.getRewardPoints(attraction, user)));
             }
-        }
-
-        return nearbyAttractions;
+            return nearestAttractions.stream().sorted(Comparator.comparing(NearestAttraction::getProximityInMiles)).limit(5).collect(Collectors.toList());
+        }, executorService);
     }
 
     private void addShutDownHook() {

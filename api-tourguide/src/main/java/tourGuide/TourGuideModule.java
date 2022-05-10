@@ -4,6 +4,8 @@ import com.jsoniter.spi.JsoniterSpi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -12,8 +14,7 @@ public class TourGuideModule {
 
 	@Bean
 	public void jsonStreamConfigure() {
-		JsoniterSpi.registerTypeEncoder(UUID.class, (obj, stream) -> stream.writeVal(obj.toString()));
-		JsoniterSpi.registerTypeEncoder(Date.class, (obj, stream) -> stream.writeVal(obj.toString()));
+        JsoniterSpi.registerTypeDecoder(Date.class, iter -> Date.parse(iter.readString()));
 	}
 	
 }

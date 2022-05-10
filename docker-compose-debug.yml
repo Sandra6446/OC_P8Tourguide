@@ -1,0 +1,63 @@
+version: "3.9"
+services:
+  microservice-gps:
+    image: gps
+    container_name: microservice-gps
+    build:
+      context: microservice-gps
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8081:8081"
+      - "5006:5006"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5006
+    networks:
+      - tourguide-network-debug
+
+  microservice-reward:
+    image: reward
+    container_name: microservice-reward
+    build:
+      context: microservice-reward
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8082:8082"
+    networks:
+      - tourguide-network-debug
+
+  microservice-trip:
+    image: trip
+    container_name: microservice-trip
+    build:
+      context: microservice-trip
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8083:8083"
+    networks:
+      - tourguide-network-debug
+
+  api-tourguide:
+    image: tourguide
+    container_name: api-tourguide
+    build:
+      context: api-tourguide
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+    depends_on:
+      - microservice-gps
+      - microservice-reward
+      - microservice-trip
+    networks:
+      - tourguide-network-debug
+
+networks:
+  tourguide-network-debug:
+    driver: bridge

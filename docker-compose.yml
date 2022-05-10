@@ -43,10 +43,6 @@ services:
       context: api-tourguide
       dockerfile: Dockerfile
     restart: always
-    environment:
-      - url.gps=http://microservice-gps:8081/
-      - url.reward=http://microservice-reward:8082/
-      - url.trip=http://microservice-trip:8083/
     ports:
       - "8080:8080"
     depends_on:
@@ -57,4 +53,5 @@ services:
       - tourguide-network
 
 networks:
-  tourguide-network: { }
+  tourguide-network:
+    driver : bridge
