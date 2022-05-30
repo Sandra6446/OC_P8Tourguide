@@ -1,4 +1,4 @@
-package tourGuide.model;
+package tourGuide.model.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,13 +1,10 @@
 package tourGuide.controller;
 
 import com.jsoniter.output.JsonStream;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tourGuide.model.NearestAttraction;
-import tourGuide.model.rest.response.gps.Attraction;
 import tourGuide.model.rest.response.gps.VisitedLocation;
 import tourGuide.model.rest.response.trip.Provider;
 import tourGuide.model.user.User;
@@ -67,7 +64,7 @@ public class TourGuideController {
         //        ...
         //     }
 
-        return JsonStream.serialize("");
+        return JsonStream.serialize(tourGuideService.getRecentLocations());
     }
 
     @RequestMapping("/getTripDeals")
@@ -79,6 +76,5 @@ public class TourGuideController {
     private User getUser(String userName) {
         return tourGuideService.getUser(userName);
     }
-
-
+    
 }
