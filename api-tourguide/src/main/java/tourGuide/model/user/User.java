@@ -1,104 +1,55 @@
 package tourGuide.model.user;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.javamoney.moneta.Money;
 import tourGuide.model.rest.response.gps.VisitedLocation;
 import tourGuide.model.rest.response.trip.Provider;
+import tourGuide.model.user.dto.UserPreferencesDto;
 
+import javax.money.Monetary;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 public class User {
-	private final UUID userId;
-	private final String userName;
-	private String phoneNumber;
-	private String emailAddress;
-	private Date latestLocationTimestamp;
-	private List<VisitedLocation> visitedLocations = new ArrayList<>();
-	private List<UserReward> userRewards = new ArrayList<>();
-	private UserPreferences userPreferences = new tourGuide.model.user.UserPreferences();
-	private List<Provider> tripDeals = new ArrayList<>();
+    private final UUID userId;
+    private final String userName;
+    private String phoneNumber;
+    private String emailAddress;
+    private Date latestLocationTimestamp;
+    private List<VisitedLocation> visitedLocations = new ArrayList<>();
+    private List<UserReward> userRewards = new ArrayList<>();
+    private UserPreferences userPreferences = new UserPreferences();
+    private List<Provider> tripDeals = new ArrayList<>();
 
-	public User(UUID userId, String userName, String phoneNumber, String emailAddress) {
-		this.userId = userId;
-		this.userName = userName;
-		this.phoneNumber = phoneNumber;
-		this.emailAddress = emailAddress;
-	}
-	
-	public UUID getUserId() {
-		return userId;
-	}
-	
-	public String getUserName() {
-		return userName;
-	}
-	
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-	
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
+    public User(UUID userId, String userName, String phoneNumber, String emailAddress) {
+        this.userId = userId;
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+        this.emailAddress = emailAddress;
+    }
 
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-	
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-	
-	public void setLatestLocationTimestamp(Date latestLocationTimestamp) {
-		this.latestLocationTimestamp = latestLocationTimestamp;
-	}
-	
-	public Date getLatestLocationTimestamp() {
-		return latestLocationTimestamp;
-	}
-	
-	public void addToVisitedLocations(VisitedLocation visitedLocation) {
-		visitedLocations.add(visitedLocation);
-	}
-	
-	public List<VisitedLocation> getVisitedLocations() {
-		return visitedLocations;
-	}
-	
-	public void clearVisitedLocations() {
-		visitedLocations.clear();
-	}
+    public void addToVisitedLocations(VisitedLocation visitedLocation) {
+        visitedLocations.add(visitedLocation);
+    }
 
-	public void addUserReward(tourGuide.model.user.UserReward userReward) {
-		if(userRewards.stream().filter(r -> !r.attraction.getAttractionName().equals(userReward.attraction)).count() == 0) {
-			userRewards.add(userReward);
-		}
-	}
-	
-	public List<tourGuide.model.user.UserReward> getUserRewards() {
-		return userRewards;
-	}
-	
-	public tourGuide.model.user.UserPreferences getUserPreferences() {
-		return userPreferences;
-	}
-	
-	public void setUserPreferences(tourGuide.model.user.UserPreferences userPreferences) {
-		this.userPreferences = userPreferences;
-	}
+    public void clearVisitedLocations() {
+        visitedLocations.clear();
+    }
 
-	public VisitedLocation getLastVisitedLocation() {
-		return visitedLocations.get(visitedLocations.size() - 1);
-	}
+    public void addUserReward(UserReward userReward) {
+        userRewards.add(userReward);
+    }
 
+    public VisitedLocation getLastVisitedLocation() {
+        return visitedLocations.get(visitedLocations.size() - 1);
+    }
 
-	public void setTripDeals(List<Provider> tripDeals) {
-		this.tripDeals = tripDeals;
-	}
-	
-	public List<Provider> getTripDeals() {
-		return tripDeals;
-	}
-
+    public void updateUserPreferences(UserPreferencesDto userPreferencesDto) {
+        this.getUserPreferences().update(userPreferencesDto);
+    }
 }

@@ -1,4 +1,4 @@
-package tourGuide.performance;
+package tourGuide;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Ignore;
@@ -60,6 +60,7 @@ public class TestPerformance {
 
     private final Logger logger = LoggerFactory.getLogger(TestPerformance.class);
 
+    @Ignore
     @Test
     public void highVolumeTrackLocation() throws ExecutionException, InterruptedException {
         // Users should be incremented up to 100,000, and test finishes within 15 minutes

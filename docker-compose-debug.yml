@@ -24,6 +24,9 @@ services:
     restart: always
     ports:
       - "8082:8082"
+      - "5007:5007"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5007
     networks:
       - tourguide-network-debug
 
@@ -36,6 +39,9 @@ services:
     restart: always
     ports:
       - "8083:8083"
+      - "5008:5008"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008
     networks:
       - tourguide-network-debug
 

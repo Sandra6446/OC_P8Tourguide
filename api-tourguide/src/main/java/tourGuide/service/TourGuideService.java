@@ -1,20 +1,22 @@
 package tourGuide.service;
 
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tourGuide.client.GpsClient;
 import tourGuide.client.TripClient;
 import tourGuide.helper.InternalTestHelper;
-import tourGuide.model.NearestAttraction;
 import tourGuide.model.rest.response.gps.Attraction;
 import tourGuide.model.rest.response.gps.Location;
 import tourGuide.model.rest.response.gps.VisitedLocation;
 import tourGuide.model.rest.response.trip.Provider;
+import tourGuide.model.user.NearByAttraction;
 import tourGuide.model.user.User;
+import tourGuide.model.user.UserPreferences;
 import tourGuide.model.user.UserReward;
+import tourGuide.model.user.dto.UserPreferencesDto;
 import tourGuide.tracker.Tracker;
 
 import java.time.LocalDateTime;
@@ -28,39 +30,38 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
-@RequiredArgsConstructor
 public class TourGuideService {
-    /**********************************************************************************
-     *
-     * Methods Below: For Internal Testing
-     *
-     **********************************************************************************/
-    private static final String tripPricerApiKey = "test-server-api-key";
-    // Database connection will be used for external users, but for testing purposes internal users are provided and stored in memory
-    private final Map<String, User> internalUserMap = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(TourGuideService.class);
-    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(60);
     public Tracker tracker;
     boolean testMode = true;
 
     @Autowired
-    private RewardsService rewardsService;
-    @Autowired
     private GpsClient gpsClient;
+    @Autowired
+    private RewardsService rewardsService;
     @Autowired
     private TripClient tripClient;
 
-    public TourGuideService(GpsClient gpsClient, RewardsService rewardsService) {
-        this.gpsClient = gpsClient;
+    @Value("${tracking}")
+    private boolean tracking;
+
+    public TourGuideService(GpsClient gpsClient, RewardsService rewardsService, TripClient tripClient) {
         this.rewardsService = rewardsService;
+        this.gpsClient = gpsClient;
+        this.tripClient = tripClient;
         if (testMode) {
             logger.info("TestMode enabled");
             logger.debug("Initializing users");
             initializeInternalUsers();
             logger.debug("Finished initializing users");
         }
-        tracker = new Tracker(this);
-        addShutDownHook();
+        if (tracking) {
+            tracker = new Tracker(this);
+            addShutDownHook();
+        } else {
+            logger.info("Tracker disabled");
+        }
     }
 
     public List<UserReward> getUserRewards(User user) {
@@ -69,10 +70,9 @@ public class TourGuideService {
 
     public VisitedLocation getUserLocation(User user) throws ExecutionException, InterruptedException {
         logger.debug("TourGuideService.getUserLocation");
-        VisitedLocation visitedLocation = (user.getVisitedLocations().size() > 0 ?
+        return (user.getVisitedLocations().size() > 0 ?
                 user.getLastVisitedLocation() :
                 trackUserLocation(user).get());
-        return visitedLocation;
     }
 
     public User getUser(String userName) {
@@ -90,11 +90,11 @@ public class TourGuideService {
     }
 
     public CompletableFuture<List<Provider>> getTripDeals(User user) {
-        int cumulatativeRewardPoints = user.getUserRewards().stream().mapToInt(i -> i.getRewardPoints()).sum();
-        logger.debug("TourGuideService.getTripDeals");
+        int cumulativeRewardPoints = user.getUserRewards().stream().mapToInt(i -> i.getRewardPoints()).sum();
         return CompletableFuture.supplyAsync(() -> {
+            logger.debug("TourGuideService.getTripDeals");
             List<Provider> providers = tripClient.getPrice(tripPricerApiKey, user.getUserId(), user.getUserPreferences().getNumberOfAdults(),
-                    user.getUserPreferences().getNumberOfChildren(), user.getUserPreferences().getTripDuration(), cumulatativeRewardPoints);
+                    user.getUserPreferences().getNumberOfChildren(), user.getUserPreferences().getTripDuration(), cumulativeRewardPoints);
             user.setTripDeals(providers);
             return providers;
         }, executorService);
@@ -110,24 +110,27 @@ public class TourGuideService {
         }, executorService);
     }
 
-    public CompletableFuture<List<Attraction>> getNearByAttractions(VisitedLocation visitedLocation) {
+    public CompletableFuture<List<NearByAttraction>> getNearByAttractions(User user, VisitedLocation visitedLocation) {
         logger.debug("TourGuideService.getNearbyAttractions");
         return CompletableFuture.supplyAsync(() -> {
             List<Attraction> attractions = gpsClient.readAttractions();
-            return attractions.stream().filter(attraction -> rewardsService.isWithinAttractionProximity(attraction, visitedLocation.getLocation())).collect(Collectors.toList());
+            List<NearByAttraction> nearByAttractions = new ArrayList<>();
+            for (Attraction attraction : attractions) {
+                nearByAttractions.add(new NearByAttraction(attraction.getAttractionName(), attraction.getLatitude(), attraction.getLongitude(), visitedLocation.getLocation(), rewardsService.getDistance(attraction, visitedLocation.getLocation()), rewardsService.getRewardPoints(attraction, user)));
+            }
+            return nearByAttractions.stream().sorted(Comparator.comparing(NearByAttraction::getProximityInMiles)).limit(5).collect(Collectors.toList());
         }, executorService);
     }
 
-    public CompletableFuture<List<NearestAttraction>> getNearestAttractions(User user, VisitedLocation visitedLocation) {
-        logger.debug("TourGuideService.getNearbyAttractions");
-        return CompletableFuture.supplyAsync(() -> {
-            List<Attraction> attractions = gpsClient.readAttractions();
-            List<NearestAttraction> nearestAttractions = new ArrayList<>();
-            for (Attraction attraction : attractions) {
-                nearestAttractions.add(new NearestAttraction(attraction.getAttractionName(), attraction.getLatitude(), attraction.getLongitude(), visitedLocation.getLocation(), rewardsService.getDistance(attraction, visitedLocation.getLocation()), rewardsService.getRewardPoints(attraction, user)));
-            }
-            return nearestAttractions.stream().sorted(Comparator.comparing(NearestAttraction::getProximityInMiles)).limit(5).collect(Collectors.toList());
-        }, executorService);
+    public Hashtable<String, Location> getRecentLocations() {
+        List<User> allUsers = getAllUsers();
+        Hashtable<String, Location> recentLocations = new Hashtable<>();
+        allUsers.forEach(user -> recentLocations.put(user.getUserId().toString(), user.getLastVisitedLocation().getLocation()));
+        return recentLocations;
+    }
+
+    public void updatePreferences(User user, UserPreferencesDto userPreferencesDto) {
+        user.updateUserPreferences(userPreferencesDto);
     }
 
     private void addShutDownHook() {
@@ -137,6 +140,15 @@ public class TourGuideService {
             }
         });
     }
+
+    /**********************************************************************************
+     *
+     * Methods Below: For Internal Testing
+     *
+     **********************************************************************************/
+    private static final String tripPricerApiKey = "test-server-api-key";
+    // Database connection will be used for external users, but for testing purposes internal users are provided and stored in memory
+    private final Map<String, User> internalUserMap = new HashMap<>();
 
     private void initializeInternalUsers() {
         IntStream.range(0, InternalTestHelper.getInternalUserNumber()).forEach(i -> {
@@ -173,5 +185,4 @@ public class TourGuideService {
         LocalDateTime localDateTime = LocalDateTime.now().minusDays(new Random().nextInt(30));
         return Date.from(localDateTime.toInstant(ZoneOffset.UTC));
     }
-
 }

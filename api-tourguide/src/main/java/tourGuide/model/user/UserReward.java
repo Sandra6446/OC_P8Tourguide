@@ -1,31 +1,24 @@
 package tourGuide.model.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import tourGuide.model.rest.response.gps.Attraction;
 import tourGuide.model.rest.response.gps.VisitedLocation;
 
+import javax.validation.constraints.NotNull;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserReward {
 
-	public final VisitedLocation visitedLocation;
-	public final Attraction attraction;
-	private int rewardPoints;
+    @NotNull
+    private VisitedLocation visitedLocation;
+    @NotNull
+    private Attraction attraction;
+    private int rewardPoints;
 
-	public UserReward(VisitedLocation visitedLocation, Attraction attraction, int rewardPoints) {
-		this.visitedLocation = visitedLocation;
-		this.attraction = attraction;
-		this.rewardPoints = rewardPoints;
-	}
-	
-	public UserReward(VisitedLocation visitedLocation, Attraction attraction) {
-		this.visitedLocation = visitedLocation;
-		this.attraction = attraction;
-	}
-
-	public void setRewardPoints(int rewardPoints) {
-		this.rewardPoints = rewardPoints;
-	}
-	
-	public int getRewardPoints() {
-		return rewardPoints;
-	}
-	
 }

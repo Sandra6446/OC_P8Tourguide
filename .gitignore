@@ -1,9 +1,10 @@
 # Gradle
-.gradle
+.gradle/
+/.gradle/
 /build/
-!gradle-wrapper.jar
 
 # IntelliJ
 .idea/
+/.idea/
 
 *.DS_Store

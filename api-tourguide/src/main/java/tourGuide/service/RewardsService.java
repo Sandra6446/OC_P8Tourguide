@@ -14,8 +14,7 @@ import tourGuide.model.user.User;
 import tourGuide.model.user.UserReward;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +23,9 @@ public class RewardsService {
     private final Logger logger = LoggerFactory.getLogger(RewardsService.class);
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
     @Autowired
-    GpsClient gpsClient;
+    private GpsClient gpsClient;
     @Autowired
-    RewardClient rewardClient;
+    private RewardClient rewardClient;
     // proximity in miles
     private int defaultProximityBuffer = 10;
     private int proximityBuffer = defaultProximityBuffer;
@@ -42,12 +41,13 @@ public class RewardsService {
 
     public void calculateRewards(User user) {
         logger.debug("RewardsService.calculateRewards");
-        List<VisitedLocation> userLocations = user.getVisitedLocations();
         List<Attraction> attractions = gpsClient.readAttractions();
 
-        for(VisitedLocation visitedLocation : userLocations) {
+        CopyOnWriteArrayList<VisitedLocation> locations = new CopyOnWriteArrayList<>(user.getVisitedLocations());
+
+        for(VisitedLocation visitedLocation : locations) {
             for(Attraction attraction : attractions) {
-                if(user.getUserRewards().stream().filter(r -> r.attraction.getAttractionName().equals(attraction.getAttractionName())).count() == 0) {
+                if(user.getUserRewards().stream().filter(r -> r.getAttraction().getAttractionName().equals(attraction.getAttractionName())).count() == 0) {
                     if(nearAttraction(visitedLocation, attraction)) {
                         user.addUserReward(new UserReward(visitedLocation, attraction, getRewardPoints(attraction, user)));
                     }
@@ -67,8 +67,7 @@ public class RewardsService {
 
 
     public int getRewardPoints(Attraction attraction, User user) {
-        logger.debug("RewardsService.getRewardPoints");
-        return rewardClient.readRewards(attraction.getAttractionId(), user.getUserId());
+            return rewardClient.readRewards(attraction.getAttractionId(), user.getUserId());
     }
 
     public double getDistance(Location loc1, Location loc2) {

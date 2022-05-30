@@ -1,4 +1,4 @@
-package tourGuide;
+package tourGuide.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +13,6 @@ import tourGuide.model.rest.response.gps.Attraction;
 import tourGuide.model.rest.response.gps.VisitedLocation;
 import tourGuide.model.user.User;
 import tourGuide.model.user.UserReward;
-import tourGuide.service.RewardsService;
-import tourGuide.service.TourGuideService;
 
 import java.util.Date;
 import java.util.List;
@@ -42,7 +40,7 @@ public class TestRewardsService {
         user.addToVisitedLocations(new VisitedLocation(user.getUserId(), attraction, new Date()));
         rewardsService.calculateRewards(user);
         List<UserReward> userRewards = user.getUserRewards();
-        assertTrue(userRewards.size() == 1);
+        assertEquals(1, userRewards.size());
     }
 
     @Test

@@ -8,7 +8,7 @@ import tourGuide.model.rest.response.gps.Location;
 @AllArgsConstructor
 @Getter
 @Setter
-public class NearestAttraction {
+public class NearByAttraction {
 
     private String name;
     private double latitude;

@@ -13,12 +13,11 @@ public class Tracker extends Thread {
     private static final long trackingPollingInterval = TimeUnit.MINUTES.toSeconds(5);
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final TourGuideService tourGuideService;
-    private Logger logger = LoggerFactory.getLogger(Tracker.class);
+    private final Logger logger = LoggerFactory.getLogger(Tracker.class);
     private boolean stop = false;
 
     public Tracker(TourGuideService tourGuideService) {
         this.tourGuideService = tourGuideService;
-
         executorService.submit(this);
     }
 
