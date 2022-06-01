@@ -5,11 +5,11 @@
 ```diff
 Ce repository contient :
 - L'API passerelle :
-  * api-tourguide
+  * api-tourguide (avec sa documentation Java)
 - Trois microservices :
-  * microservice-gps
-  * microservice-reward
-  * microservice-trip
+  * microservice-gps (avec sa documentation Java)
+  * microservice-reward (avec sa documentation Java)
+  * microservice-trip (avec sa documentation Java)
 - Les fichiers Docker :
   * Docker-compose
   * Docker-compose-debug (pour le dev)
