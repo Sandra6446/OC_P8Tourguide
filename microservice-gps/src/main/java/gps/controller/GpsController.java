@@ -20,19 +20,35 @@ public class GpsController {
     @Autowired
     private GpsService gpsService;
 
+    /**
+     * Gets the home page
+     *
+     * @return The string "Welcome to microservice-gps!"
+     */
     @RequestMapping("/")
     public String index() {
         return "Welcome to microservice-gps!";
     }
 
+    /**
+     * Gets the last location of a user
+     *
+     * @param userId : The id of the concerned user
+     * @return A ResponseEntity with a json string containing a VisitedLocation
+     */
     @RequestMapping("/getUserLocation")
-    public ResponseEntity getLocation(@RequestParam UUID userId) throws ParseException {
+    public ResponseEntity<String> getLocation(@RequestParam UUID userId) throws ParseException {
         VisitedLocation visitedLocation = gpsService.getUserLocation(userId);
         return ResponseEntity.ok(JsonStream.serialize(visitedLocation));
     }
 
+    /**
+     * Gets all known attractions
+     *
+     * @return A ResponseEntity with a json string containing a list of Attraction
+     */
     @RequestMapping("/getAttractions")
-    public ResponseEntity getAttractions() {
+    public ResponseEntity<String> getAttractions() {
         List<Attraction> attractions = gpsService.getAttractions();
         return ResponseEntity.ok(JsonStream.serialize(attractions));
     }

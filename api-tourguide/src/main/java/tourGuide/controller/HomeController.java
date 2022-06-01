@@ -12,7 +12,7 @@ public class HomeController {
     private TourGuideService tourGuideService;
 
     /**
-     * Get the home page
+     * Gets the home page
      *
      * @return The string "Greetings from TourGuide!"
      */

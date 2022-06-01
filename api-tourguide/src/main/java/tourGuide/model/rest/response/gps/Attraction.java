@@ -6,21 +6,29 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Represents an attraction
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 public class Attraction extends Location {
 
+    /**
+     * The name of the attraction
+     */
     private String attractionName;
+    /**
+     * The city of the attraction
+     */
     private String city;
+    /**
+     * The state of the attraction
+     */
     private String state;
+    /**
+     * The id of the attraction
+     */
     private UUID attractionId;
 
-    public Attraction(String attractionName, String city, String state, double latitude, double longitude) {
-        super(latitude, longitude);
-        this.attractionName = attractionName;
-        this.city = city;
-        this.state = state;
-        this.attractionId = UUID.randomUUID();
-    }
 }

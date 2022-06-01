@@ -9,6 +9,9 @@ import tourGuide.service.TourGuideService;
 import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * Represents a tracker
+ */
 public class Tracker extends Thread {
     private static final long trackingPollingInterval = TimeUnit.MINUTES.toSeconds(5);
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -29,6 +32,9 @@ public class Tracker extends Thread {
         executorService.shutdownNow();
     }
 
+    /**
+     * Runs the user's location tracker
+     */
     @Override
     public void run() {
         StopWatch stopWatch = new StopWatch();

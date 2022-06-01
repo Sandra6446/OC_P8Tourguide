@@ -16,14 +16,14 @@ Ce repository contient :
   * Dockerfile
 ```
 
-## Technical :
+## Technique :
 
 1. Framework: Spring Boot v2.1.6.RELEASE
 2. Java 8
 3. Gradle 4.8.1
 4. Docker
 
-## Install :
+## Installation :
 
 - Ouvrir un terminal dans api-tourguide :
   > ./gradlew bootjar

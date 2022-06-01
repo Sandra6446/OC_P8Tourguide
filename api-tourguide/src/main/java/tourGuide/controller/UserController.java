@@ -9,7 +9,6 @@ import tourGuide.exception.NotFoundException;
 import tourGuide.model.rest.response.gps.VisitedLocation;
 import tourGuide.model.rest.response.trip.Provider;
 import tourGuide.model.user.User;
-import tourGuide.model.user.UserPreferences;
 import tourGuide.model.user.dto.UserPreferencesDto;
 import tourGuide.service.TourGuideService;
 
@@ -25,10 +24,10 @@ public class UserController {
     private TourGuideService tourGuideService;
 
     /**
-     * Get the most recent location of a user
+     * Get the last location of a user
      *
      * @param userName : The concerned username
-     * @return The user's last location
+     * @return A json string with a Location
      * @see tourGuide.model.rest.response.gps.Location
      */
     @RequestMapping("/getLocation")
@@ -41,7 +40,8 @@ public class UserController {
      * Get the 5 nearest attractions of a user's location
      *
      * @param userName : The concerned username
-     * @return The 5 nearest attractions of the user's last location
+     * @return A json string with the 5 nearest attractions of the user's last location
+     * @see tourGuide.model.rest.response.gps.Attraction
      */
     @RequestMapping("/getNearbyAttractions")
     public String getNearbyAttractions(@RequestParam String userName) throws ExecutionException, InterruptedException {
@@ -52,27 +52,49 @@ public class UserController {
     /**
      * Get the reward points of a user
      *
-     * @param userName
-     * @return
+     * @param userName : The concerned username
+     * @return A json string with user rewards
+     * @see tourGuide.model.user.UserReward
      */
     @RequestMapping("/getRewards")
     public String getRewards(@RequestParam String userName) {
         return JsonStream.serialize(tourGuideService.getUserRewards(getUser(userName)));
     }
 
+    /**
+     * Get trips matching the user's preferences
+     *
+     * @param userName : The concerned username
+     * @return A json string with a list of trip provider
+     * @see Provider
+     */
     @RequestMapping("/getTripDeals")
     public String getTripDeals(@RequestParam String userName) throws ExecutionException, InterruptedException {
         List<Provider> providers = tourGuideService.getTripDeals(getUser(userName)).get();
         return JsonStream.serialize(providers);
     }
 
+    /**
+     * Update user's preferences
+     *
+     * @param userName           : The concerned username
+     * @param userPreferencesDto : The new preferences
+     * @return A json string with the new preferences
+     * @see tourGuide.model.user.UserPreferences
+     */
     @PutMapping("/updatePreferences")
     public String updatePreferences(@RequestParam String userName, @RequestBody UserPreferencesDto userPreferencesDto) {
         User user = getUser(userName);
-        tourGuideService.updatePreferences(user,userPreferencesDto);
+        tourGuideService.updatePreferences(user, userPreferencesDto);
         return JsonStream.serialize(user.getUserPreferences());
     }
 
+    /**
+     * Get a user from a userName
+     *
+     * @param userName : The concerned username
+     * @return A user
+     */
     private User getUser(String userName) throws IllegalArgumentException {
         User user = tourGuideService.getUser(userName);
         if (user != null) {
