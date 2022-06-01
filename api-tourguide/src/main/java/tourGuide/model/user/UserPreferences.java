@@ -9,20 +9,52 @@ import tourGuide.model.user.dto.UserPreferencesDto;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 
+/**
+ * Represents user's trip preferences
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserPreferences {
 
+    /**
+     * The proximity required
+     */
     private int attractionProximity = Integer.MAX_VALUE;
+    /**
+     * The currency required
+     */
     private CurrencyUnit currency = Monetary.getCurrency("USD");
+    /**
+     * The lower price required
+     */
     private Money lowerPricePoint = Money.of(0, currency);
+    /**
+     * The high price required
+     */
     private Money highPricePoint = Money.of(Integer.MAX_VALUE, currency);
+    /**
+     * The duration required
+     */
     private int tripDuration = 1;
+    /**
+     * The ticket quantity required
+     */
     private int ticketQuantity = 1;
+    /**
+     * The number of adults required
+     */
     private int numberOfAdults = 1;
+    /**
+     * The number of children required
+     */
     private int numberOfChildren = 0;
 
+    /**
+     * Updates the user's preferences
+     *
+     * @param userPreferencesDto : The new preferences
+     */
     public void update(UserPreferencesDto userPreferencesDto) {
         if (userPreferencesDto.getAttractionProximity() != null) {
             this.setAttractionProximity(userPreferencesDto.getAttractionProximity());

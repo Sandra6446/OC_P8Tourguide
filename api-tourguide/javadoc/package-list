@@ -1,0 +1,11 @@
+tourGuide
+tourGuide.client
+tourGuide.controller
+tourGuide.exception
+tourGuide.helper
+tourGuide.model.rest.response.gps
+tourGuide.model.rest.response.trip
+tourGuide.model.user
+tourGuide.model.user.dto
+tourGuide.service
+tourGuide.tracker

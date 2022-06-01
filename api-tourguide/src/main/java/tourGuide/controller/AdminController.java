@@ -15,7 +15,7 @@ public class AdminController {
     /**
      * Get a list of every user's most recent location as JSON
      *
-     * @return All userId and their last location
+     * @return A json string with all userId and their last location
      */
     @RequestMapping("/getAllCurrentLocations")
     public String getAllCurrentLocations() {

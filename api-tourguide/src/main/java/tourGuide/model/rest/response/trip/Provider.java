@@ -5,16 +5,24 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Represents a trip
+ */
 @Data
 @NoArgsConstructor
 public class Provider {
+
+    /**
+     * The name of the trip
+     */
     private String name;
+    /**
+     * The price of the trip
+     */
     private double price;
+    /**
+     * The id of the trip
+     */
     private UUID tripId;
 
-    public Provider(UUID tripId, String name, double price) {
-        this.name = name;
-        this.tripId = tripId;
-        this.price = price;
-    }
 }

@@ -4,41 +4,47 @@ import com.jsoniter.output.JsonStream;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import javax.annotation.Nullable;
-import java.util.StringJoiner;
-
+/**
+ * Represents user's trip preferences
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserPreferencesDto {
 
-    private Integer attractionProximity = null;
-    private String currencyCode = "";
-    private Integer lowerPrice = null;
-    private Integer highPrice = null;
-    private Integer tripDuration = 1;
-    private Integer ticketQuantity = 1;
-    private Integer numberOfAdults = 1;
-    private Integer numberOfChildren = 0;
-
-    /*
-    @Override
-    public String toString() {
-        return new StringJoiner(", ","{","}")
-                .add("\"attractionProximity\":" + attractionProximity)
-                .add("\"currencyCode\":" + "'" + currencyCode + "'")
-                .add("\"lowerPrice\":" + lowerPrice)
-                .add("\"highPrice\":" + highPrice)
-                .add("\"tripDuration\":" + tripDuration)
-                .add("\"ticketQuantity\":" + ticketQuantity)
-                .add("\"numberOfAdults\":" + numberOfAdults)
-                .add("\"numberOfChildren\":" + numberOfChildren)
-                .toString();
-    }
-
+    /**
+     * The proximity required
      */
+    private Integer attractionProximity = null;
+    /**
+     * The currency required
+     */
+    private String currencyCode = "";
+    /**
+     * The lower price required
+     */
+    private Integer lowerPrice = null;
+    /**
+     * The high price required
+     */
+    private Integer highPrice = null;
+    /**
+     * The duration required
+     */
+    private Integer tripDuration = 1;
+    /**
+     * The ticket quantity required
+     */
+    private Integer ticketQuantity = 1;
+    /**
+     * The number of adults required
+     */
+    private Integer numberOfAdults = 1;
+    /**
+     * The number of children required
+     */
+    private Integer numberOfChildren = 0;
 
     @Override
     public String toString() {
