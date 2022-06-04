@@ -33,7 +33,7 @@ Ce repository contient :
 ```
 
 - Ouvrir un terminal dans OC_P8Tourguide :
-  > docker-compose -d up
+  > docker-compose up -d
 
 - Les microservices sont prêts à être utilisés.
 
